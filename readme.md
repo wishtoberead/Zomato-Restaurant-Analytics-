@@ -1,19 +1,19 @@
 # Zomato Restaurant Analytics
 
-An end-to-end data analytics project exploring restaurant ratings, customer engagement, pricing, cuisine preferences, and service availability using **MySQL and Power BI**.
+An end-to-end data analytics project exploring restaurant ratings, pricing, customer engagement, cuisine preferences, and service availability using **MySQL and Power BI**.
 
 ## Project Overview
 
-This project analyzes restaurant data from Zomato to identify patterns in customer ratings, restaurant pricing, voting behavior, and service availability.
+This project analyzes restaurant data to identify patterns in customer ratings, restaurant pricing, voting behaviour, and service availability.
 
-The goal is to transform raw restaurant data into meaningful business insights and present the findings through an interactive Power BI dashboard.
+The objective is to transform raw restaurant data into meaningful business insights through SQL-based analysis and an interactive Power BI dashboard.
 
 ## Business Questions
 
-The analysis focuses on the following questions:
+The analysis investigates the following questions:
 
 1. How do restaurant ratings vary across different price ranges?
-2. Which price ranges have the highest number of restaurants?
+2. Which price ranges contain the most restaurants?
 3. Is customer engagement (votes) associated with restaurant pricing and ratings?
 4. How do ordinary average ratings compare with vote-weighted ratings?
 5. Does online delivery availability relate to restaurant ratings?
@@ -25,70 +25,76 @@ The analysis focuses on the following questions:
 | Tool | Purpose |
 |---|---|
 | MySQL | Data cleaning, validation, and exploratory analysis |
-| Power BI | Interactive dashboard and visualization |
+| SQL | Aggregations, filtering, joins, and business analysis |
+| Power BI | Interactive dashboard and data visualization |
 | DAX | Measures and calculated metrics |
 | Excel / CSV | Dataset inspection and preparation |
 
 ## Dataset Overview
 
-The dataset contains restaurant-level information, including:
+- **Working table:** `zomato_clean`
+- **Records analysed:** 9,551 restaurants
+- **Columns:** 21
+- **Unique restaurant IDs:** 9,551
 
-- Restaurant ID and name
-- Country and city
-- Restaurant location
-- Cuisines
-- Average cost for two
-- Price range
-- Aggregate rating
-- Rating text and color
-- Votes
-- Table booking availability
-- Online delivery availability
+The dataset includes restaurant names, locations, cuisines, average cost, price range, ratings, votes, and service availability.
 
-**Dataset size:** 9,551 unique restaurants after duplicate removal.
+## Data Cleaning & Validation
 
-## Data Cleaning & Preparation
+The data validation process included:
 
-The data preparation process included:
-
-- Identifying and removing duplicate restaurant records.
-- Validating restaurant IDs and record counts.
+- Checking total records and unique restaurant IDs.
+- Identifying duplicate records.
 - Checking missing and blank values.
-- Examining numeric fields for invalid values.
-- Reviewing rating ranges and rating categories.
-- Inspecting unusual cost and geographic coordinate values.
-- Preserving questionable records rather than making unsupported assumptions.
+- Validating numerical fields such as ratings, votes, and average cost.
+- Inspecting rating labels and rating colours.
+- Checking geographic coordinates.
+- Reviewing inconsistent text values.
 
-The cleaned dataset contains 9,551 records with unique restaurant IDs.
+The final working table contains 9,551 unique restaurant records.
 
-## Exploratory Data Analysis
+Nine records contain blank cuisine values. These were preserved rather than assigned unsupported cuisine labels.
 
-The analysis explored several dimensions:
+## SQL Analysis
 
-- Restaurant ratings by price range
-- Restaurant distribution by price range
-- Rating coverage
-- Customer votes and engagement
-- Online delivery and table booking
-- Cuisine and city performance
-- Ordinary versus vote-weighted ratings
+The SQL scripts are organized into four stages:
+
+| Script | Analysis |
+|---|---|
+| `01_data_quality_validation.sql` | Data quality and validation |
+| `02_ratings_and_price_analysis.sql` | Ratings and price range analysis |
+| `03_customer_engagement.sql` | Votes and customer engagement |
+| `04_cuisine_city_service_analysis.sql` | Cuisine, city, and service analysis |
+
+See the [`sql/`](sql/) folder for the complete queries.
 
 ## Key Findings
 
-### 1. Ratings and Price Range
+### 1. Ratings increase with price range
 
-| Price Range | Restaurants | Average Rating | Rating Coverage |
-|---|---:|---:|---:|
-| 1 | 4,444 | 3.24 | 61.75% |
-| 2 | 3,113 | 3.38 | 87.09% |
-| 3 | 1,408 | 3.78 | 97.51% |
-| 4 | 586 | 3.89 | 98.12% |
+| Price Range | Restaurants | Average Rating |
+|---|---:|---:|
+| 1 | 4,444 | 3.24 |
+| 2 | 3,113 | 3.38 |
+| 3 | 1,408 | 3.78 |
+| 4 | 586 | 3.89 |
 
-Higher price ranges have higher average ratings and rating coverage in this dataset.
+Higher price ranges have higher average ratings in this dataset. This is an observed association, not evidence that higher prices cause better ratings.
 
-### 2. Customer Engagement
+### 2. Rating coverage varies significantly
 
-Average votes per restaurant:
+| Price Range | Rating Coverage |
+|---|---:|
+| 1 | 61.75% |
+| 2 | 87.09% |
+| 3 | 97.51% |
+| 4 | 98.12% |
+
+Price ranges 1 and 2 account for approximately **97.86% of all unrated restaurants**.
+
+### 3. Customer engagement
+
+Average votes per restaurant vary across price ranges:
 
 | Price Range | Average Votes |
 |---|---:|
@@ -97,108 +103,78 @@ Average votes per restaurant:
 | 3 | 443.86 |
 | 4 | 368.60 |
 
-Price Range 3 has the highest average votes, while Price Range 4 has fewer average votes despite having the highest average rating.
+Price range 3 has the highest average number of votes. Engagement does not increase consistently across every price range.
 
-### 3. Ordinary vs. Vote-Weighted Ratings
+### 4. Ordinary vs. vote-weighted ratings
 
-The analysis compares two ways of calculating restaurant ratings:
+Vote-weighted ratings account for the number of votes received by each restaurant.
 
-- **Ordinary Average Rating:** Gives every rated restaurant equal weight.
-- **Vote-Weighted Rating:** Gives greater weight to restaurants with more votes.
-
-| Price Range | Ordinary Rating | Weighted Rating |
+| Price Range | Ordinary Average | Vote-Weighted Average |
 |---|---:|---:|
 | 1 | 3.24 | 3.78 |
 | 2 | 3.38 | 3.84 |
 | 3 | 3.78 | 4.08 |
 | 4 | 3.89 | 4.14 |
 
-The weighted ratings are higher across all four price ranges. This indicates that restaurants receiving more votes have a stronger influence on the weighted average.
+The weighted averages are higher across all four price ranges. This indicates that restaurants with more votes have a stronger influence on the weighted result.
 
-### 4. Online Delivery
+### 5. Online delivery
 
-| Online Delivery | Restaurants | Average Rating | Rating Coverage |
-|---|---:|---:|---:|
-| No | 7,100 | 3.47 | 71.10% |
-| Yes | 2,451 | 3.38 | 96.08% |
+- Restaurants offering online delivery have an average rating of 3.38.
+- Restaurants without online delivery have an average rating of 3.47.
 
-Restaurants offering online delivery have slightly lower average ratings in this dataset, but substantially higher rating coverage.
+The difference is relatively small and should not be interpreted as a causal relationship. The two groups also differ in rating coverage and composition.
 
-These are associations, not evidence that online delivery causes a change in ratings.
+### 6. City-level observations
 
-### 5. Rating Coverage
+Among cities with at least 30 rated restaurants:
 
-A notable finding is that 2,102 of the 2,148 unrated restaurants belong to Price Ranges 1 and 2.
+| City | Average Rating |
+|---|---:|
+| Gurgaon | 3.33 |
+| New Delhi | 3.30 |
+| Noida | 3.16 |
+| Faridabad | 3.10 |
 
-That represents approximately **97.86% of all unrated restaurants**.
-
-This highlights an important limitation when comparing average ratings across price segments.
+The dataset is concentrated in these cities, so the results should not be generalized to all restaurant markets.
 
 ## Power BI Dashboard
 
 The interactive dashboard includes:
 
-- KPI cards for total restaurants, rated coverage, and average rating.
+- Total restaurants, rating coverage, and average rating KPIs.
 - Average restaurant rating by price range.
 - Restaurant count by price range.
-- Ordinary versus vote-weighted rating comparison.
-- Weighted versus average rating gap.
-- Average customer votes by price range.
+- Ordinary vs. vote-weighted rating comparison.
+- Weighted vs. average rating gap.
+- Customer engagement by price range.
 - Rating coverage by price range.
 - Average rating by online delivery.
-- Top cities by average rating.
+- City-level rating comparison.
 
-Interactive slicers allow users to explore the data by:
+**Dashboard file:** [`Zomato_Dashboard.pbix`](powerbi/Zomato_Dashboard.pbix)
 
-- Price Range
-- City
-- Online Delivery
-
-## Repository Structure
-
-```text
-Zomato-Restaurant-Analytics/
-│
-├── sql/
-│   ├── 01_data_quality_validation.sql
-│   ├── 02_ratings_and_price_analysis.sql
-│   ├── 03_customer_engagement.sql
-│   └── 04_cuisine_city_and_services.sql
-│
-├── powerbi/
-│   └── Zomato_Dashboard.pbix
-│
-├── docs/
-│   └── dashboard_screenshot.png
-│
-└── README.md
-```
-
-## Business Takeaways
-
-- Higher price ranges show higher average restaurant ratings in this dataset.
-- Price Range 3 receives the highest average number of votes.
-- Vote-weighted ratings are consistently higher than ordinary averages.
-- Rating coverage is considerably lower in the two cheapest price ranges.
-- Online delivery availability is associated with higher rating coverage, but not higher average ratings.
-- Restaurant ratings should be interpreted alongside engagement and rating coverage.
+See the [`powerbi/`](powerbi/) folder for the dashboard file and its documentation.
 
 ## Limitations
 
-- The dataset represents a particular snapshot and may not reflect current restaurant performance.
-- Cuisine entries are combinations of cuisine labels rather than fully standardized categories.
-- Votes are used as an engagement measure and should not automatically be interpreted as unique customers.
-- Correlations and group comparisons do not establish causation.
-- Unusual or questionable source values were not arbitrarily corrected.
+- The analysis describes associations and does not establish causation.
+- Blank cuisine values were preserved rather than guessed.
+- Some geographic coordinates require further verification.
+- The dataset is concentrated in a limited set of cities.
+- Vote counts represent recorded engagement, not necessarily unique customers.
+- Average ratings exclude restaurants with an aggregate rating of zero.
 
 ## Conclusion
 
-This project demonstrates an end-to-end analytics workflow, from data validation and SQL-based exploration to DAX calculations and interactive Power BI reporting.
+The analysis identifies clear differences in restaurant ratings, rating coverage, and customer engagement across price ranges.
 
-It highlights how combining multiple metrics—ratings, votes, price ranges, and service availability—can provide a more complete understanding of restaurant performance.
+Higher price ranges show higher average ratings and more complete rating coverage. Vote-weighted ratings are also consistently higher than ordinary averages, highlighting how customer engagement influences aggregate results.
+
+The project demonstrates an end-to-end analytics workflow using SQL for data validation and business analysis, and Power BI for interactive visualization.
 
 ---
 
-**Author:** Nandesh
+**Technologies:** MySQL | SQL | Power BI | DAX | Excel
+
 **Project:** Zomato Restaurant Analytics
-**Tools:** MySQL | Power BI | DAX

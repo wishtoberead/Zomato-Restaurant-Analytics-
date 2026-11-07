@@ -139,6 +139,7 @@ Among cities with at least 30 rated restaurants:
 The dataset is concentrated in these cities, so the results should not be generalized to all restaurant markets.
 
 ## Power BI Dashboard
+![Zomato Restaurant Analytics Dashboard](images/zomato_dashboard.png)
 
 The interactive dashboard includes:
 
